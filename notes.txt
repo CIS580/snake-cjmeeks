@@ -1,0 +1,8 @@
+Collisions
+
+circles
+if (distanceformula ^2 < r1^2 + r2^2) -> collision (overlap, intersect, no collision)
+
+rectangles
+
+!(Abot > btop || atop < bottom || aleft > bright || aright < bleft)
