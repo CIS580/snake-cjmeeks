@@ -7,15 +7,21 @@ backBuffer.height = frontBuffer.height;
 var backCtx = backBuffer.getContext('2d');
 var oldTime = performance.now();
 
-
+var count = 0;
+var pause = false;
+var scoreDom = document.getElementById('score');
+var score = 0;
 var appleEaten = false;
 var speed = 2;
 var gameEnd = false;
 var snakeImage = new Image();
-snakeImage.src = "purpledot.jpg";
-var snake = [{x: 0, y: 0, size: 10}];
+snakeImage.src = "./assets/purpledot.jpg";
 var apple = new Image();
-apple.src = "apple.jpg";
+apple.src = "./assets/apple.jpg";
+var background = new Image(0);
+background.src = "./assets/background.jpg";
+var snake = [{x: 0, y: 0, size: 20}];
+
 var apples = [];
 
 var input = {
@@ -35,6 +41,7 @@ function loop(newTime) {
     if(!gameEnd){
         var elapsedTime = newTime - oldTime;
         oldTime = newTime;
+
         update(elapsedTime);
         render(elapsedTime);
         // Flip the back buffer
@@ -61,18 +68,19 @@ function update(elapsedTime) {
   // TODO: Grow the snake periodically
   if(appleEaten){
       addBody();
+      pause = true;
+      score++;
       appleEaten = false;
   }
-  // TODO: Move the snake
-  move();
-  // TODO: Determine if the snake has moved out-of-bounds (offscreen)
-  collisionSides();
-  // TODO: Determine if the snake has eaten an apple
-  collisionApple();
-  // TODO: Determine if the snake has eaten its tail
-  collisionTail();
-  // TODO: [Extra Credit] Determine if the snake has run into an obstacle
-
+    // TODO: Move the snake
+    if(!pause)move();
+    // TODO: Determine if the snake has moved out-of-bounds (offscreen)
+    collisionSides();
+    // TODO: Determine if the snake has eaten an apple
+    collisionApple();
+    // TODO: Determine if the snake has eaten its tail
+    collisionTail();
+    // TODO: [Extra Credit] Determine if the snake has run into an obstacle
 }
 
 /**
@@ -82,14 +90,26 @@ function update(elapsedTime) {
   * the number of milliseconds passed since the last frame.
   */
 function render(elapsedTime) {
+  if(pause){
+    count++;
+  }
+  else{
+    count = 0;
+  }
   backCtx.clearRect(0, 0, backBuffer.width, backBuffer.height);
   //had to do this because clearing back buffer in render doesnt work
   frontCtx.clearRect(0,0,frontBuffer.width, frontBuffer.height);
+  backCtx.drawImage(background, 0 ,0 ,backBuffer.width, backBuffer.height);
+  scoreDom.innerHTML = score;
   backCtx.fillStyle = "purple";
   for(i = snake.length-1; i >= 0; i--){
     backCtx.drawImage(snakeImage,snake[i].x,snake[i].y,snake[i].size,snake[i].size);
     backCtx.strokeRect(snake[i].x,snake[i].y,snake[i].size,snake[i].size);
   }
+  if(count > 60){
+    pause = false;
+  }
+  //doneSpawning = true;
   if(apples.length >0){
       backCtx.drawImage(apple,apples[0].x,apples[0].y, apples[0].size,apples[0].size);
   }
@@ -119,26 +139,26 @@ function move(){
 function collisionApple(){
     var head = snake[0];
     var app = apples[0];
-    if(head.y > app.y && head.y < (app.y + 10))
+    if(head.y > app.y && head.y < (app.y + head.size))
     {
-        if ((head.x+10) > app.x && (head.x+10) < (app.x +10)) {
+        if ((head.x+head.size) > app.x && (head.x+head.size) < (app.x +head.size)) {
             appleEaten = true;
             apples.pop();
             console.log("collision");
         }
-        else if (head.x > app.x && head.x < (app.x + 10)) {
+        else if (head.x > app.x && head.x < (app.x + head.size)) {
             appleEaten = true;
             apples.pop();
             console.log("collision");
         }
     }
-    else if ((head.y+10) > app.y && (head.y+10) < (app.y+10)) {
-        if ((head.x+10) > app.x && (head.x+10) < (app.x +10)) {
+    else if ((head.y+head.size) > app.y && (head.y+head.size) < (app.y+head.size)) {
+        if ((head.x+head.size) > app.x && (head.x+head.size) < (app.x +head.size)) {
             appleEaten = true;
             apples.pop();
             console.log("collision");
         }
-        else if (head.x > app.x && head.x < (app.x + 10)) {
+        else if (head.x > app.x && head.x < (app.x + head.size)) {
             appleEaten = true;
             apples.pop();
             console.log("collision");
@@ -154,32 +174,32 @@ function collisionApple(){
 //handles collision with sides
 function collisionSides(){
     head = snake[0];
-    if(head.y < 0 || (head.y+10) > backBuffer.height || head.x < 0 || (head.x+10) > backBuffer.width){
+    if(head.y < 0 || (head.y+head.size) > backBuffer.height || head.x < 0 || (head.x+head.size) > backBuffer.width){
         gameEnd = true;
     }
 }
 
 function collisionTail(){
     var head = snake[0];
-    for(i = 10; i < snake.length; i++){
+    for(i = head.size; i < snake.length; i++){
         var tail = snake[i];
-        if(head.y > tail.y && head.y < (tail.y + 10))
+        if(head.y > tail.y && head.y < (tail.y + head.size))
         {
-            if ((head.x+10) > tail.x && (head.x+10) < (tail.x +10)) {
+            if ((head.x+head.size) > tail.x && (head.x+head.size) < (tail.x +head.size)) {
                 gameEnd = true;
                 console.log("gameEnd");
             }
-            else if (head.x > tail.x && head.x < (tail.x + 10)) {
+            else if (head.x > tail.x && head.x < (tail.x + head.size)) {
                 gameEnd = true;
                 console.log("gameEnd");
             }
         }
-        if ((head.y+10) > tail.y && (head.y+10) < (tail.y+10)) {
-            if ((head.x+10) > tail.x && (head.x+10) < (tail.x +10)) {
+        if ((head.y+head.size) > tail.y && (head.y+head.size) < (tail.y+head.size)) {
+            if ((head.x+head.size) > tail.x && (head.x+head.size) < (tail.x +head.size)) {
                 gameEnd = true;
                 console.log("gameEnd");
             }
-            else if (head.x > tail.x && head.x < (tail.x + 10)) {
+            else if (head.x > tail.x && head.x < (tail.x + head.size)) {
                 gameEnd = true;
                 console.log("gameEnd");
             }
@@ -197,7 +217,7 @@ function end(){
 //creates a random location of apple
 function spawnApple(){
     if(apples.length == 0){
-        apples.push({x: Math.floor(Math.random() * 750), y: Math.floor(Math.random() * 470), size: 10});
+        apples.push({x: Math.floor(Math.random() * 750), y: Math.floor(Math.random() * 470), size: snake[0].size});
     }
 }
 //updates the snake body to follow the head
