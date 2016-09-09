@@ -10,9 +10,18 @@ var oldTime = performance.now();
 var count = 0;
 var pause = false;
 var scoreDom = document.getElementById('score');
+var highDom = document.getElementById('high');
+var difficultyDome =document.getElementById('difficulty');
 var score = 0;
+var highscore = 0;
 var appleEaten = false;
 var speed = 2;
+function addSpeed(){
+    speed++;
+}
+function lessSpeed(){
+    speed--;
+}
 var gameEnd = false;
 var snakeImage = new Image();
 snakeImage.src = "./assets/purpledot.jpg";
@@ -20,6 +29,8 @@ var apple = new Image();
 apple.src = "./assets/apple.jpg";
 var background = new Image(0);
 background.src = "./assets/background.jpg";
+var gameOverImage = new Image();
+gameOverImage.src = "./assets/gameover.png"
 var snake = [{x: 0, y: 0, size: 20}];
 
 var apples = [];
@@ -28,7 +39,8 @@ var input = {
   up: false,
   down: false,
   left: false,
-  right: true
+  right: true,
+  continue:false
 }
 
 /**
@@ -47,11 +59,18 @@ function loop(newTime) {
         // Flip the back buffer
         frontCtx.drawImage(backBuffer, 0, 0);
         // Run the next loop
-        window.requestAnimationFrame(loop);
+
     }
     else{
         end();
+        console.log("end");
+        if(input.continue){
+            gameEnd = false;
+            input.continue = false;
+            input.right = true;
+        }
     }
+    window.requestAnimationFrame(loop);
 }
 
 /**
@@ -101,6 +120,8 @@ function render(elapsedTime) {
   frontCtx.clearRect(0,0,frontBuffer.width, frontBuffer.height);
   backCtx.drawImage(background, 0 ,0 ,backBuffer.width, backBuffer.height);
   scoreDom.innerHTML = score;
+  difficultyDome.innerHTML = speed;
+  highDom.innerHTML = highscore;
   backCtx.fillStyle = "purple";
   for(i = snake.length-1; i >= 0; i--){
     backCtx.drawImage(snakeImage,snake[i].x,snake[i].y,snake[i].size,snake[i].size);
@@ -187,21 +208,17 @@ function collisionTail(){
         {
             if ((head.x+head.size) > tail.x && (head.x+head.size) < (tail.x +head.size)) {
                 gameEnd = true;
-                console.log("gameEnd");
             }
             else if (head.x > tail.x && head.x < (tail.x + head.size)) {
                 gameEnd = true;
-                console.log("gameEnd");
             }
         }
         if ((head.y+head.size) > tail.y && (head.y+head.size) < (tail.y+head.size)) {
             if ((head.x+head.size) > tail.x && (head.x+head.size) < (tail.x +head.size)) {
                 gameEnd = true;
-                console.log("gameEnd");
             }
             else if (head.x > tail.x && head.x < (tail.x + head.size)) {
                 gameEnd = true;
-                console.log("gameEnd");
             }
         }
     }
@@ -210,8 +227,20 @@ function collisionTail(){
 //end game
 function end(){
     frontCtx.clearRect(0,0,frontBuffer.width, frontBuffer.height);
-    frontCtx.font = "80px Arial";
-    frontCtx.fillText("Game Over", frontBuffer.width/4, frontBuffer.height/2);
+    frontCtx.drawImage(gameOverImage, 0, 0);
+    resetSnake();
+}
+
+function resetSnake(){
+    input.up = false;
+    input.right = false;
+    input.left = false;
+    input.down = false;
+    snake = [{x:0, y:0, size:20}];
+    if(score > highscore){
+        highscore = score;
+    }
+    score = 0;
 }
 
 //creates a random location of apple
@@ -278,6 +307,12 @@ window.onkeydown = function(event){
             input.down = true;
         }
         break;
+      case 32:
+          input.up = false;
+          input.right = false;
+          input.left = false;
+          input.down = false;
+          input.continue = true;
   }
 }
 

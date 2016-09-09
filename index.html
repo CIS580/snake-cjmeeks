@@ -6,13 +6,28 @@
   </head>
   <body>
     <h1>Play Snake</h1>
-    <h2>Score:</h2>
+    <h2>Apples Eaten:</h2>
     <h3 id="score"></h3>
-    <canvas id="snake" width="760" height="480"></canvas>
+    <h2>Difficulty:</h2><h3 id="difficulty"></h3>
+    <button onclick="addSpeed()">Difficulty up</button>
+    <button onclick="lessSpeed()">Difficulty Down</button>
+    <div>
+        <canvas id="snake" width="760" height="480"></canvas>
+
+    </div>
+    <p>
+        (Tip: You can adjust where the snake will head next when paused)
+    </p>
     <h2>Instructions</h2>
+
     <p>
       Use the arrow keys to move the snake
     </p>
+    <p>
+         After Eating an apple the game will <strong id="pause">pause</strong> for you to adjust your strategy going forward.
+    </p>
+    <h1>High Score:</h1>
+    <h2 id="high"></h2>
     <script type="text/javascript" src="snake.js"></script>
   </body>
 </html>

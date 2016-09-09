@@ -2,3 +2,14 @@ canvas#snake {
   border: 2px solid #333;
   box-shadow: 4px 4px 4px #777;
 }
+
+#difficulty{
+    flex-wrap: wrap;
+    color: red;
+}
+#score{
+    color:green;
+}
+#pause{
+    color: purple;
+}
