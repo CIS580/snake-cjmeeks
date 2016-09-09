@@ -49,17 +49,12 @@ var input = {
  * @param{time} the current time as a DOMHighResTimeStamp
  */
 function loop(newTime) {
-
     if(!gameEnd){
         var elapsedTime = newTime - oldTime;
         oldTime = newTime;
-
         update(elapsedTime);
         render(elapsedTime);
-        // Flip the back buffer
         frontCtx.drawImage(backBuffer, 0, 0);
-        // Run the next loop
-
     }
     else{
         end();
@@ -130,15 +125,9 @@ function render(elapsedTime) {
   if(count > 60){
     pause = false;
   }
-  //doneSpawning = true;
   if(apples.length >0){
       backCtx.drawImage(apple,apples[0].x,apples[0].y, apples[0].size,apples[0].size);
   }
-
-
-  //backCtx.clearRect(0, 0, backBuffer.width, backBuffer.height);
-  // TODO: Draw the game objects into the backBuffer
-
 }
 //handles updating the snakes location
 function move(){
@@ -258,7 +247,7 @@ function updateSnakeBody(){
 }
 //adds length to snake if apple is eaten
 function addBody(){
-    for(i = 0; i < snake[0].size/speed;i++){
+    for(i = 0; i < snake[0].size;i++){
         snake.push({x: snake[0].x, y: snake[0].y, size: snake[0].size});
     }
 
